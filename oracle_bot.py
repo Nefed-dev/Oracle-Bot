@@ -1,14 +1,18 @@
+import os
+
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.dispatcher.filters import Command
 from aiogram.types import Message, CallbackQuery
 
 from keyboard import oracle_keyboard
 
-from config import BOT_TOKEN
-
 from database import do_oracle
 
-BOT_TOKEN = BOT_TOKEN
+from dotenv import load_dotenv
+
+load_dotenv()
+
+BOT_TOKEN = str(os.getenv("BOT_TOKEN"))
 
 bot = Bot(BOT_TOKEN)
 dp = Dispatcher(bot)
@@ -17,7 +21,8 @@ DB_FILE = 'oracle.db'
 
 
 async def set_default_commands(dp):
-    await dp.bot.set_my_commands([types.BotCommand("start", 'Запустить бота'), types.BotCommand("help", 'Памагити')])
+    await dp.bot.set_my_commands([types.BotCommand("start", 'Запустить бота'),
+                                  types.BotCommand("help", 'Памагити')])
 
 
 async def on_startup(dp):
@@ -26,12 +31,10 @@ async def on_startup(dp):
 
 @dp.message_handler(Command('start'))
 async def hello_message(message: Message):
-    await message.answer(text=f'Привет!\n\n Это мой бот с различными предсказаниями. \n\n Мой ник на GitHub: Nefed-dev')  # Первое сообщение, должно висеть всегда.
-    # Добавить ссылку на гитхаб, познакомиться
+    await message.answer(
+        text=f'Привет!\n\n Это мой бот с различными предсказаниями. \n\n Мой ник на GitHub: Nefed-dev')
     await message.answer(text=f'Нажми на одну из кнопок и ты получишь свое предсказание ↓',
                          reply_markup=oracle_keyboard())
-    # Непосредственно предсказание,
-    # прикрепить клавиатуру, изменять сообщение предсказанием
 
 
 @dp.callback_query_handler()
